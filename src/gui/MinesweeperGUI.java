@@ -6,15 +6,17 @@ import java.awt.image.*;
 
 import javax.swing.*;
 import gameCode.*;
-
+//FIXME Irgentwo isch x und y (bzw i und j) vertauscht. SEHR WICHTIG!!!
 @SuppressWarnings("serial")
 public class MinesweeperGUI extends JFrame{
 	
 	private JButton[][] felder = null;
-	private final int BREITE = 10;
-	private final int HOEHE = 10;
+	private final int BREITE;
+	private final int HOEHE;
 	private MinenFeld minenfeld = null;
 	private boolean firstClick = true;
+	
+	private int verbleibendeBomben = 0;
 	
 	public MinesweeperGUI(String title, Schwierigkeit schwierigkeit) {
 		setTitle(title);
@@ -23,8 +25,28 @@ public class MinesweeperGUI extends JFrame{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
 		
-		
 		//Feld vorbereiten
+		switch(schwierigkeit) {
+		case EINFACH:
+			BREITE = 10;
+			HOEHE = 10;
+			break;
+		case MITTEL:
+			BREITE = 15;
+			HOEHE = 15;
+			break;
+		case SCHWIERIG:
+			BREITE = 20;
+			HOEHE = 20;
+			break;
+		default:
+			BREITE = 10;
+			HOEHE = 10;
+			break;
+			
+		}
+
+		verbleibendeBomben = schwierigkeit.getAnzahlBomben();
 		felder = new JButton[BREITE][HOEHE];
 		for(int i = 0; i < BREITE; i++) {
 			for(int j = 0; j < HOEHE; j++) {
@@ -33,7 +55,6 @@ public class MinesweeperGUI extends JFrame{
 				felder[i][j] = new JButton();
 				felder[i][j].setBounds(10 + i * 60, 10 + j * 60, 60, 60);
 
-				//TODO Feature das wenn 0 angeklickt werd, dass olles in dor nähe a ausgwählt werd :-) Hel schofsch
 				felder[i][j].addActionListener(new ActionListener() {
 
 					@Override
@@ -42,9 +63,14 @@ public class MinesweeperGUI extends JFrame{
 							//Generiere es erst beim ersten Klick
 							if(firstClick == true) {
 								minenfeld = new MinenFeld(schwierigkeit, I, J);
+								System.out.println(minenfeld.toString());
+								firstClick = false;
 							}
 							int zahl = minenfeld.aufdecken(I, J);
 							switch(zahl) {
+							case -2:
+								break;
+
 							case -1:
 								MinesweeperGUI.this.felder[I][J].setIcon(new ImageIcon("Smiley.svg.png"));
 								break;
@@ -78,6 +104,10 @@ public class MinesweeperGUI extends JFrame{
 								MinesweeperGUI.this.felder[I][J].setForeground(Color.RED);
 								MinesweeperGUI.this.felder[I][J].setText(Integer.toString(zahl));
 								break;
+							default:
+								MinesweeperGUI.this.felder[I][J].setText("to much");
+								break;
+								
 							}
 						}
 					}
@@ -88,6 +118,9 @@ public class MinesweeperGUI extends JFrame{
 								try {
 									int zahl = minenfeld.aufdecken(x+i, y+j);
 									switch(zahl) {
+									case -2:
+										break;
+										
 									case 0:	
 										MinesweeperGUI.this.felder[x+i][y+j].setText(Integer.toString(zahl));
 										aufdeckenRekusiv(x+i, y+j);
@@ -104,7 +137,7 @@ public class MinesweeperGUI extends JFrame{
 										break;
 
 									case 3:
-										MinesweeperGUI.this.felder[x+i][y+j].setForeground(Color.YELLOW);
+										MinesweeperGUI.this.felder[x+i][y+j].setForeground(Color.GREEN);
 										MinesweeperGUI.this.felder[x+i][y+j].setText(Integer.toString(zahl));
 										break;
 
@@ -116,6 +149,9 @@ public class MinesweeperGUI extends JFrame{
 									case 5:
 										MinesweeperGUI.this.felder[x+i][y+j].setForeground(Color.RED);
 										MinesweeperGUI.this.felder[x+i][y+j].setText(Integer.toString(zahl));
+										break;
+									default:
+										MinesweeperGUI.this.felder[I][J].setText("to much");
 										break;
 									}
 								} catch(ArrayIndexOutOfBoundsException e) { ; }

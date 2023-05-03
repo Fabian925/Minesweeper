@@ -16,7 +16,7 @@ public class MinenFeld {
 	
 	private final int BREITE;
 	private final int HOEHE;
-	private int anzahlBomben = 0;
+	private final int ANZAHL_BOMBEN;
 	/**
 	 * legt ein neues Feld an und füllt es mit Minen
 	 * @param x breite vom Array
@@ -26,18 +26,20 @@ public class MinenFeld {
 		switch(schwierigkeit) {
 		case EINFACH:
 			feld = new int[10][10];
-			anzahlBomben = 10;
 			break;
 		case MITTEL:
 			feld = new int[15][15];
-			anzahlBomben = 20;
 			break;
 
 		case SCHWIERIG:
 			feld = new int[20][20];
-			anzahlBomben = 40;
+			break;
+		default:
+			feld = new int[10][10];
 			break;
 		}
+			
+		ANZAHL_BOMBEN = schwierigkeit.getAnzahlBomben();
 		BREITE = feld.length;
 		HOEHE = feld[0].length;
 		fuellenMitMinen(feld, xStart, yStart);
@@ -69,14 +71,27 @@ public class MinenFeld {
 	}
 	
 	private void fuellenMitMinen(int[][] feld, int xStart, int yStart) {
-
-		for(int i = 0; i < BREITE; i++) {
+		final double MINEN_CHANCHE = (double) (ANZAHL_BOMBEN) / (BREITE * HOEHE);
+		int i = 0;
+		for(int verbleibendeBomben = ANZAHL_BOMBEN; verbleibendeBomben > 0; i++) {
+			if(i >= BREITE) {
+				i = 0;
+			}
 			for(int j = 0; j < HOEHE; j++) {
 				if(i == xStart && j == yStart) {
+					if(feld[i][j] == -1) {
+						verbleibendeBomben++;
+					}
 					feld[i][j] = 0;
 				}
 				else {
-					//feld[i][j] = Math.random() < MINEN_CHANCHE ? -1 : 0;
+					feld[i][j] = Math.random() < MINEN_CHANCHE ? -1 : 0;
+					if(feld[i][j] == -1)
+						verbleibendeBomben--;
+				}
+				
+				if(verbleibendeBomben <= 0) {
+					break;
 				}
 			}
 		}
