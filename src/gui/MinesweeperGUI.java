@@ -48,12 +48,12 @@ public class MinesweeperGUI extends JFrame{
 
 		verbleibendeBomben = schwierigkeit.getAnzahlBomben();
 		felder = new JButton[BREITE][HOEHE];
-		for(int i = 0; i < BREITE; i++) {
-			for(int j = 0; j < HOEHE; j++) {
+		for(int i = 0; i < HOEHE; i++) {
+			for(int j = 0; j < BREITE; j++) {
 				final int I = i;
 				final int J = j;
 				felder[i][j] = new JButton();
-				felder[i][j].setBounds(10 + i * 60, 10 + j * 60, 60, 60);
+				felder[i][j].setBounds(10 + j * 60, 10 + i * 60, 60, 60);
 
 				felder[i][j].addActionListener(new ActionListener() {
 
@@ -104,10 +104,6 @@ public class MinesweeperGUI extends JFrame{
 								MinesweeperGUI.this.felder[I][J].setForeground(Color.RED);
 								MinesweeperGUI.this.felder[I][J].setText(Integer.toString(zahl));
 								break;
-							default:
-								MinesweeperGUI.this.felder[I][J].setText("to much");
-								break;
-								
 							}
 						}
 					}
@@ -116,43 +112,42 @@ public class MinesweeperGUI extends JFrame{
 						for(int i = -1; i <= 1; i++) {
 							for(int j = -1; j <= 1; j++) {
 								try {
-									int zahl = minenfeld.aufdecken(x+i, y+j);
-									switch(zahl) {
-									case -2:
-										break;
-										
-									case 0:	
-										MinesweeperGUI.this.felder[x+i][y+j].setText(Integer.toString(zahl));
-										aufdeckenRekusiv(x+i, y+j);
-										break;
+									if(felder[y+i][x+j].getIcon() == null) {
+										int zahl = minenfeld.aufdecken(y+i, x+j);
+										switch(zahl) {
+										case -2:
+											break;
 
-									case 1:
-										MinesweeperGUI.this.felder[x+i][y+j].setForeground(Color.BLUE);
-										MinesweeperGUI.this.felder[x+i][y+j].setText(Integer.toString(zahl));
-										break;
+										case 0:	
+											MinesweeperGUI.this.felder[y+i][x+j].setText(Integer.toString(zahl));
+											aufdeckenRekusiv(x+j, y+i);
+											break;
 
-									case 2:
-										MinesweeperGUI.this.felder[x+i][y+j].setForeground(Color.CYAN);
-										MinesweeperGUI.this.felder[x+i][y+j].setText(Integer.toString(zahl));
-										break;
+										case 1:
+											MinesweeperGUI.this.felder[y+i][x+j].setForeground(Color.BLUE);
+											MinesweeperGUI.this.felder[y+i][x+j].setText(Integer.toString(zahl));
+											break;
 
-									case 3:
-										MinesweeperGUI.this.felder[x+i][y+j].setForeground(Color.GREEN);
-										MinesweeperGUI.this.felder[x+i][y+j].setText(Integer.toString(zahl));
-										break;
+										case 2:
+											MinesweeperGUI.this.felder[y+i][x+j].setForeground(Color.CYAN);
+											MinesweeperGUI.this.felder[y+i][x+j].setText(Integer.toString(zahl));
+											break;
 
-									case 4:
-										MinesweeperGUI.this.felder[x+i][y+j].setForeground(Color.ORANGE);
-										MinesweeperGUI.this.felder[x+i][y+j].setText(Integer.toString(zahl));
-										break;
+										case 3:
+											MinesweeperGUI.this.felder[y+i][x+j].setForeground(Color.GREEN);
+											MinesweeperGUI.this.felder[y+i][x+j].setText(Integer.toString(zahl));
+											break;
 
-									case 5:
-										MinesweeperGUI.this.felder[x+i][y+j].setForeground(Color.RED);
-										MinesweeperGUI.this.felder[x+i][y+j].setText(Integer.toString(zahl));
-										break;
-									default:
-										MinesweeperGUI.this.felder[I][J].setText("to much");
-										break;
+										case 4:
+											MinesweeperGUI.this.felder[y+i][x+j].setForeground(Color.ORANGE);
+											MinesweeperGUI.this.felder[y+i][x+j].setText(Integer.toString(zahl));
+											break;
+
+										case 5:
+											MinesweeperGUI.this.felder[y+i][x+j].setForeground(Color.RED);
+											MinesweeperGUI.this.felder[y+i][x+j].setText(Integer.toString(zahl));
+											break;
+										}
 									}
 								} catch(ArrayIndexOutOfBoundsException e) { ; }
 							}

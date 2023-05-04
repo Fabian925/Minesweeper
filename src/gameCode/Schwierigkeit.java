@@ -22,9 +22,9 @@ public enum Schwierigkeit {
 	public int getAnzahlBomben() {
 		switch(this.ordinal()) {
 		case 0:
-			return 10;
+			return 12;
 		case 1:
-			return 20;
+			return 28;
 		case 2:
 			return 40;
 		default:

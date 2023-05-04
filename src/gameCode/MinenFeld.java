@@ -22,7 +22,7 @@ public class MinenFeld {
 	 * @param x breite vom Array
 	 * @param y hoehe vom Array
 	 */
-	public MinenFeld(Schwierigkeit schwierigkeit, int xStart, int yStart) {
+	public MinenFeld(Schwierigkeit schwierigkeit, int yStart, int xStart) {
 		switch(schwierigkeit) {
 		case EINFACH:
 			feld = new int[10][10];
@@ -42,12 +42,12 @@ public class MinenFeld {
 		ANZAHL_BOMBEN = schwierigkeit.getAnzahlBomben();
 		BREITE = feld.length;
 		HOEHE = feld[0].length;
-		fuellenMitMinen(feld, xStart, yStart);
+		fuellenMitMinen(feld, yStart, xStart);
 		fuellenMitZahlen(feld);
 	}
 	
 	public void setZahl(int x, int y, int value) {
-		if(x > 0 && y > 0 && x < BREITE && y < HOEHE) {
+		if(x > 0 && y > 0 && x < HOEHE && y < BREITE) {
 			feld[x][y] = value;
 		}
 	}
@@ -70,18 +70,15 @@ public class MinenFeld {
 
 	}
 	
-	private void fuellenMitMinen(int[][] feld, int xStart, int yStart) {
+	private void fuellenMitMinen(int[][] feld, int yStart, int xStart) {
 		final double MINEN_CHANCHE = (double) (ANZAHL_BOMBEN) / (BREITE * HOEHE);
 		int i = 0;
 		for(int verbleibendeBomben = ANZAHL_BOMBEN; verbleibendeBomben > 0; i++) {
-			if(i >= BREITE) {
+			if(i >= HOEHE) {
 				i = 0;
 			}
-			for(int j = 0; j < HOEHE; j++) {
-				if(i == xStart && j == yStart) {
-					if(feld[i][j] == -1) {
-						verbleibendeBomben++;
-					}
+			for(int j = 0; j < BREITE; j++) {
+				if(i <= yStart + 1 && i >= yStart - 1 && j <= xStart + 1 && j >= xStart - 1) {
 					feld[i][j] = 0;
 				}
 				else {
@@ -102,8 +99,8 @@ public class MinenFeld {
 	
 	private void fuellenMitZahlen(int[][] feld){
 
-		for(int i = 0; i < BREITE; i++) {
-			for(int j = 0; j < HOEHE; j++) {
+		for(int i = 0; i < HOEHE; i++) {
+			for(int j = 0; j < BREITE; j++) {
 				if(feld[i][j] != -1) {
 					int anzahl = 0;
 
@@ -156,8 +153,8 @@ public class MinenFeld {
 	
 	public String toString() {
 		String ret = "";
-		for(int i = 0; i < BREITE; i++) {
-			for(int j = 0; j < HOEHE; j++) {
+		for(int i = 0; i < HOEHE; i++) {
+			for(int j = 0; j < BREITE; j++) {
 				int d = feld[i][j];
 				if(d < 0) {
 					ret = ret + d + " ";
