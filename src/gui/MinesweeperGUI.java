@@ -6,7 +6,6 @@ import java.awt.image.*;
 
 import javax.swing.*;
 import gameCode.*;
-//FIXME Irgentwo isch x und y (bzw i und j) vertauscht. SEHR WICHTIG!!!
 @SuppressWarnings("serial")
 public class MinesweeperGUI extends JFrame{
 	
@@ -14,6 +13,9 @@ public class MinesweeperGUI extends JFrame{
 	private final int BREITE;
 	private final int HOEHE;
 	private MinenFeld minenfeld = null;
+	
+	private JLabel lbl_verbleibendeBomben = null;
+	private JLabel lbl_titel = null;
 	private boolean firstClick = true;
 	
 	private int verbleibendeBomben = 0;
@@ -24,6 +26,7 @@ public class MinesweeperGUI extends JFrame{
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
+		Container cp = getContentPane();
 		
 		//Feld vorbereiten
 		switch(schwierigkeit) {
@@ -46,14 +49,27 @@ public class MinesweeperGUI extends JFrame{
 			
 		}
 
+		//JLabel nur für titel
+		lbl_titel = new JLabel(title, SwingConstants.CENTER);
+		lbl_titel.setFont(new Font("SansSerif", Font.BOLD, 20));
+		lbl_titel.setBounds(0, 10, 1000, 80);
+		cp.add(lbl_titel);
+
+		//JLabel das Anzeigt wie viele Bomben noch sind
 		verbleibendeBomben = schwierigkeit.getAnzahlBomben();
-		felder = new JButton[BREITE][HOEHE];
+		lbl_verbleibendeBomben = new JLabel(Integer.toString(verbleibendeBomben));
+		lbl_verbleibendeBomben.setBounds(800, 50, 200, 30);
+		cp.add(lbl_verbleibendeBomben);
+		
+		
+		//MinenFeld mit JButtons um über der GUI mit dem MinenFeld in der MinenFeld.java interagieren zu können
+		felder = new JButton[HOEHE][BREITE];
 		for(int i = 0; i < HOEHE; i++) {
 			for(int j = 0; j < BREITE; j++) {
 				final int I = i;
 				final int J = j;
 				felder[i][j] = new JButton();
-				felder[i][j].setBounds(10 + j * 60, 10 + i * 60, 60, 60);
+				felder[i][j].setBounds(10 + j * 60, 100 + i * 60, 60, 60);
 
 				felder[i][j].addActionListener(new ActionListener() {
 
@@ -66,7 +82,7 @@ public class MinesweeperGUI extends JFrame{
 								System.out.println(minenfeld.toString());
 								firstClick = false;
 							}
-							int zahl = minenfeld.aufdecken(I, J);
+							int zahl = minenfeld.aufdecken(J, I);
 							switch(zahl) {
 							case -2:
 								break;
@@ -77,7 +93,7 @@ public class MinesweeperGUI extends JFrame{
 
 							case 0:	
 								MinesweeperGUI.this.felder[I][J].setText(Integer.toString(zahl));
-								aufdeckenRekusiv(I, J);
+								aufdeckenRekusiv(J, I);
 								break;
 
 							case 1:
@@ -113,7 +129,7 @@ public class MinesweeperGUI extends JFrame{
 							for(int j = -1; j <= 1; j++) {
 								try {
 									if(felder[y+i][x+j].getIcon() == null) {
-										int zahl = minenfeld.aufdecken(y+i, x+j);
+										int zahl = minenfeld.aufdecken(x+j, y+i);
 										switch(zahl) {
 										case -2:
 											break;
@@ -160,11 +176,15 @@ public class MinesweeperGUI extends JFrame{
 					public void mousePressed(MouseEvent me) {
 						if(me.getButton() == MouseEvent.BUTTON3 && felder[I][J].getText() == "") {
 							//FIXME Bug: Text wird angezeigt nachdem man flagge darauf gesetzt hat, Lösung no koan Bock bleib amol aso
-							if(felder[I][J].getIcon() == null) {
+							if(felder[I][J].getIcon() == null && verbleibendeBomben > 0) {
 								felder[I][J].setIcon(new ImageIcon("Flagge.png"));
+								verbleibendeBomben--;
+								lbl_verbleibendeBomben.setText(Integer.toString(verbleibendeBomben));
 							}
-							else {
+							else if(felder[I][J].getIcon() != null){
 								felder[I][J].setIcon(null);
+								verbleibendeBomben++;
+								lbl_verbleibendeBomben.setText(Integer.toString(verbleibendeBomben));
 							}
 						}
 					}

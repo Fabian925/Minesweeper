@@ -52,7 +52,7 @@ public class AuswahlMenue extends JFrame{
 		schliesen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				AuswahlMenue.this.dispose();
 			}
 		});
 		cp.add(schliesen);

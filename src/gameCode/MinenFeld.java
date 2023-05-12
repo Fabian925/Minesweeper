@@ -64,8 +64,8 @@ public class MinenFeld {
 	 * 			1 bis 5: eine bis fünf Mine in der Nähe
 	 */
 	public int aufdecken(int x, int y) throws ArrayIndexOutOfBoundsException {
-		int ret = feld[x][y];
-		feld[x][y] = -2;
+		int ret = feld[y][x];
+		feld[y][x] = -2;
 		return ret;
 
 	}
