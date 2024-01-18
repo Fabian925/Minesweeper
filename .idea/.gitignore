@@ -1,6 +1,6 @@
 # Default ignored files
 /shelf/
-/workspace.xml
+/.idea/workspace.xml
 
 # my ignores
 /bin/
@@ -8,4 +8,4 @@
 .classpath
 .project
 *.xml
-*iml
+*.iml
