@@ -7,28 +7,20 @@ public enum Schwierigkeit {
 
 	@Override
 	public String toString() {
-		switch(this.ordinal()) {
-		case 0:
-			return "Einfach";
-		case 1:
-			return "Mittel";
-		case 2:
-			return "Schwierig";
-		default:
-			return null;
-		}
+        return switch (this.ordinal()) {
+            case 0 -> "Einfach";
+            case 1 -> "Mittel";
+            case 2 -> "Schwierig";
+            default -> null;
+        };
 	}
 	
 	public int getAnzahlBomben() {
-		switch(this.ordinal()) {
-		case 0:
-			return 12;
-		case 1:
-			return 28;
-		case 2:
-			return 40;
-		default:
-			return 10;
-		}
+        return switch (this.ordinal()) {
+            case 0 -> 12;
+            case 1 -> 28;
+            case 2 -> 40;
+            default -> 10;
+        };
 	}
 }

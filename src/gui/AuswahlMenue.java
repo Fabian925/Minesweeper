@@ -37,14 +37,11 @@ public class AuswahlMenue extends JFrame{
 		
 		los = new JButton("Los Gehts!");
 		los.setBounds(190, 225, 125, 30);
-		los.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				AuswahlMenue.this.dispose();
-				Schwierigkeit s = (Schwierigkeit) schwierigkeit.getSelectedItem();
-				new MinesweeperGUI("Minesweeper: " + s.toString(), s);
-			}
-		});
+		los.addActionListener(e -> {
+            AuswahlMenue.this.dispose();
+            Schwierigkeit s = (Schwierigkeit) schwierigkeit.getSelectedItem();
+            new MinesweeperGUI("Minesweeper: " + s.toString(), s);
+        });
 		cp.add(los);
 		
 		schliesen = new JButton("Tschüss!");

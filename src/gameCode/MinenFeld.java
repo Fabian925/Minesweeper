@@ -1,8 +1,8 @@
 package gameCode;
 
+import libary.ExecptionHandler;
+
 public class MinenFeld {
-
-
 	/*Spielfeld wo Minen oder Zahlen sein können Inhalte:
 	 * -1 = Mine
 	 * 0 = Keine Mine in der nähe
@@ -19,37 +19,33 @@ public class MinenFeld {
 	private final int ANZAHL_BOMBEN;
 	/**
 	 * legt ein neues Feld an und füllt es mit Minen
-	 * @param x breite vom Array
-	 * @param y hoehe vom Array
+	 * @param xStart die x Koordinate, welche sicher eine 0 sein muss
+	 * @param yStart die y Koordinate, welche sicher eine 0 sein muss
 	 */
 	public MinenFeld(Schwierigkeit schwierigkeit, int yStart, int xStart) {
-		switch(schwierigkeit) {
-		case EINFACH:
-			feld = new int[10][10];
-			break;
-		case MITTEL:
-			feld = new int[15][15];
-			break;
-
-		case SCHWIERIG:
-			feld = new int[20][20];
-			break;
-		default:
-			feld = new int[10][10];
-			break;
-		}
+        switch (schwierigkeit) {
+            case EINFACH 	-> feld = new int[10][10];
+            case MITTEL 	-> feld = new int[15][15];
+            case SCHWIERIG 	-> feld = new int[20][20];
+            default 		-> ExecptionHandler.handleException(new RuntimeException("Kein Vorhandener Schwierigkeitsgrad"));
+        }
 			
 		ANZAHL_BOMBEN = schwierigkeit.getAnzahlBomben();
 		BREITE = feld.length;
 		HOEHE = feld[0].length;
-		fuellenMitMinen(feld, yStart, xStart);
-		fuellenMitZahlen(feld);
+		fuellenMitMinen(yStart, xStart);
+		fuellenMitZahlen();
 	}
 	
 	public void setZahl(int x, int y, int value) {
-		if(x > 0 && y > 0 && x < HOEHE && y < BREITE) {
-			feld[x][y] = value;
-		}
+		if (x > 0 && y > 0 && x < HOEHE && y < BREITE)
+			feld[y][x] = value;
+	}
+
+	public int getZahl(int x, int y) {
+		if(x >= 0 && y >= 0 && x < HOEHE && y < BREITE)
+			return feld[y][x];
+		return -3;
 	}
 	/**
 	 * Hier wird der index des 2D-Arrays übergeben um dann herrauszufinden 
@@ -67,101 +63,76 @@ public class MinenFeld {
 		int ret = feld[y][x];
 		feld[y][x] = -2;
 		return ret;
-
 	}
 	
-	private void fuellenMitMinen(int[][] feld, int yStart, int xStart) {
+	private void fuellenMitMinen(int yStart, int xStart) {
 		final double MINEN_CHANCHE = (double) (ANZAHL_BOMBEN) / (BREITE * HOEHE);
 		int i = 0;
-		for(int verbleibendeBomben = ANZAHL_BOMBEN; verbleibendeBomben > 0; i++) {
-			if(i >= HOEHE) {
+		for (int verbleibendeBomben = ANZAHL_BOMBEN; verbleibendeBomben > 0; i++) {
+			if (i >= HOEHE)
 				i = 0;
-			}
-			for(int j = 0; j < BREITE; j++) {
-				if(i <= yStart + 1 && i >= yStart - 1 && j <= xStart + 1 && j >= xStart - 1) {
+
+			for (int j = 0; j < BREITE; j++) {
+				if (i <= yStart + 1 && i >= yStart - 1 && j <= xStart + 1 && j >= xStart - 1)
 					feld[i][j] = 0;
-				}
 				else {
 					feld[i][j] = Math.random() < MINEN_CHANCHE ? -1 : 0;
 					if(feld[i][j] == -1)
 						verbleibendeBomben--;
 				}
 				
-				if(verbleibendeBomben <= 0) {
+				if (verbleibendeBomben <= 0)
 					break;
-				}
 			}
 		}
-
-
 	}
 
-	
-	private void fuellenMitZahlen(int[][] feld){
-
+	private void fuellenMitZahlen(){
 		for(int i = 0; i < HOEHE; i++) {
 			for(int j = 0; j < BREITE; j++) {
-				if(feld[i][j] != -1) {
-					int anzahl = 0;
+				if (feld[i][j] == -1)
+					continue;
 
-					try {
-						if(feld[i-1][j-1] == -1) {
-							anzahl++;
-						}
-					} catch(ArrayIndexOutOfBoundsException e) { ; }
-					try {
-						if(feld[i][j-1] == -1) {
-							anzahl++;
-						}
-					} catch(ArrayIndexOutOfBoundsException e) { ; }
-					try {
-						if(feld[i+1][j-1] == -1) {
-							anzahl++;
-						}
-					} catch(ArrayIndexOutOfBoundsException e) { ; }
-					try {
-						if(feld[i-1][j] == -1) {
-							anzahl++;
-						}
-					} catch(ArrayIndexOutOfBoundsException e) { ; }
-					try {
-						if(feld[i+1][j] == -1) {
-							anzahl++;
-						}
-					} catch(ArrayIndexOutOfBoundsException e) { ; }
-					try {
-						if(feld[i+1][j+1] == -1) {
-							anzahl++;
-						}
-					} catch(ArrayIndexOutOfBoundsException e) { ; }
-					try {
-						if(feld[i][j+1] == -1) {
-							anzahl++;
-						}
-					} catch(ArrayIndexOutOfBoundsException e) { ; }
-					try {
-						if(feld[i-1][j+1] == -1) {
-							anzahl++;
-						}
-					} catch(ArrayIndexOutOfBoundsException e) { ; }
-
-					feld[i][j] = anzahl;
-				}
+				int anzahl = 0;
+				if (this.isMine(j-1,i-1))
+					anzahl++;
+				if (this.isMine(j, i-1))
+					anzahl++;
+				if (this.isMine(j+1, i-1))
+					anzahl++;
+				if (this.isMine(j-1, i))
+					anzahl++;
+				if (this.isMine(j+1, i))
+					anzahl++;
+				if (this.isMine(j+1, i+1))
+					anzahl++;
+				if (this.isMine(j, i+1))
+					anzahl++;
+				if (this.isMine(j-1, i+1))
+					anzahl++;
+				feld[i][j] = anzahl;
 			}
 		}
 	}
-	
+
+	private boolean isMine(int x, int y) {
+		try {
+			return feld[y][x] == -1;
+		} catch (ArrayIndexOutOfBoundsException ignore) {
+			return false;
+		}
+	}
+
+	@Override
 	public String toString() {
 		String ret = "";
-		for(int i = 0; i < HOEHE; i++) {
-			for(int j = 0; j < BREITE; j++) {
+		for (int i = 0; i < HOEHE; i++) {
+			for (int j = 0; j < BREITE; j++) {
 				int d = feld[i][j];
-				if(d < 0) {
+				if (d < 0)
 					ret = ret + d + " ";
-				}
-				else {
+				else
 					ret = ret + " " + d + " ";
-				}
 			}
 			ret = ret + "\n";
 		}
@@ -170,7 +141,6 @@ public class MinenFeld {
 	
 	public static void main(String[] args) {
 		MinenFeld m = new MinenFeld(Schwierigkeit.EINFACH, 0, 0);
-
 		System.out.println(m.toString());
 	}
 }
