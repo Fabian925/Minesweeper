@@ -5,45 +5,30 @@ import java.awt.event.*;
 
 import javax.swing.*;
 import gameCode.*;
-import libary.ExecptionHandler;
 
-@SuppressWarnings("serial")
-public class MinesweeperGUI extends JFrame{
+public class MinesweeperGUI extends JFrame {
 
-	private JButton[][] felder = null;
-	private int BREITE = 10;
-	private int HOEHE = 10;
+	private JButton[][] felder;
+	private final int BREITE;
+	private final int HOEHE;
 	private MinenFeld minenfeld = null;
 
-	private JLabel lbl_verbleibendeBomben = null;
-	private JLabel lbl_titel = null;
+	private JLabel lbl_verbleibendeBomben;
+	private JLabel lbl_titel;
 	private boolean firstClick = true;
-	private int verbleibendeBomben = 0;
+	private int verbleibendeBomben;
 
 	public MinesweeperGUI(String title, Schwierigkeit schwierigkeit) {
 		setTitle(title);
-		setBounds(10, 10 , 1000, 1000);
+		setPreferredSize(new Dimension(1000, 1000));
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
+		pack();
 		Container cp = getContentPane();
 
-		//Feld vorbereiten
-		switch (schwierigkeit) {
-			case EINFACH -> {
-				BREITE = 10;
-				HOEHE = 10;
-			}
-			case MITTEL -> {
-				BREITE = 15;
-				HOEHE = 15;
-			}
-			case SCHWIERIG -> {
-				BREITE = 20;
-				HOEHE = 20;
-			}
-			default -> ExecptionHandler.handleExceptionGUI(new Exception("Kein Vorhandener Schwierigkeitsgrad"));
-		}
+		BREITE = schwierigkeit.getDimension();
+		HOEHE = schwierigkeit.getDimension();
 
 		//JLabel nur für titel
 		lbl_titel = new JLabel(title, SwingConstants.CENTER);
@@ -57,6 +42,11 @@ public class MinesweeperGUI extends JFrame{
 		lbl_verbleibendeBomben.setBounds(800, 50, 200, 30);
 		cp.add(lbl_verbleibendeBomben);
 
+		// JPanel voll mit Minen!
+		JPanel minenPanel = new JPanel(new GridLayout(HOEHE, BREITE));
+		minenPanel.setBounds(10, 100, cp.getWidth() - 20, cp.getHeight() -110);
+		cp.add(minenPanel);
+
 		//MinenFeld mit JButtons um über der GUI mit dem MinenFeld in der MinenFeld.java interagieren zu können
 		felder = new JButton[HOEHE][BREITE];
 		for(int i = 0; i < HOEHE; i++) {
@@ -64,7 +54,6 @@ public class MinesweeperGUI extends JFrame{
 				final int I = i;
 				final int J = j;
 				felder[i][j] = new JButton();
-				felder[i][j].setBounds(10 + j * 60, 100 + i * 60, 60, 60);
 
 				felder[i][j].addActionListener(new ActionListener() {
 					@Override
@@ -152,7 +141,7 @@ public class MinesweeperGUI extends JFrame{
 						}
 					}
 				});
-				getContentPane().add(felder[i][j]);
+				minenPanel.add(felder[i][j]);
 			}
 		}
 		setVisible(true);

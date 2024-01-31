@@ -1,7 +1,5 @@
 package gameCode;
 
-import libary.ExecptionHandler;
-
 public class MinenFeld {
 	/*Spielfeld wo Minen oder Zahlen sein können Inhalte:
 	 * -1 = Mine
@@ -12,7 +10,7 @@ public class MinenFeld {
 	 * 5 Minen in der Nähe
 	 * 5 ist das Maximum
 	 */
-	private int[][] feld = null;
+	private int[][] feld;
 	
 	private final int BREITE;
 	private final int HOEHE;
@@ -23,16 +21,11 @@ public class MinenFeld {
 	 * @param yStart die y Koordinate, welche sicher eine 0 sein muss
 	 */
 	public MinenFeld(Schwierigkeit schwierigkeit, int yStart, int xStart) {
-        switch (schwierigkeit) {
-            case EINFACH 	-> feld = new int[10][10];
-            case MITTEL 	-> feld = new int[15][15];
-            case SCHWIERIG 	-> feld = new int[20][20];
-            default 		-> ExecptionHandler.handleException(new RuntimeException("Kein Vorhandener Schwierigkeitsgrad"));
-        }
+		BREITE = schwierigkeit.getDimension();
+		HOEHE = schwierigkeit.getDimension();
+		feld = new int[HOEHE][BREITE];
 			
 		ANZAHL_BOMBEN = schwierigkeit.getAnzahlBomben();
-		BREITE = feld.length;
-		HOEHE = feld[0].length;
 		fuellenMitMinen(yStart, xStart);
 		fuellenMitZahlen();
 	}
@@ -125,22 +118,22 @@ public class MinenFeld {
 
 	@Override
 	public String toString() {
-		String ret = "";
+		StringBuilder ret = new StringBuilder();
 		for (int i = 0; i < HOEHE; i++) {
 			for (int j = 0; j < BREITE; j++) {
 				int d = feld[i][j];
 				if (d < 0)
-					ret = ret + d + " ";
+					ret.append(d).append(" ");
 				else
-					ret = ret + " " + d + " ";
+					ret.append(" ").append(d).append(" ");
 			}
-			ret = ret + "\n";
+			ret.append("\n");
 		}
-		return ret;
+		return ret.toString();
 	}
 	
 	public static void main(String[] args) {
 		MinenFeld m = new MinenFeld(Schwierigkeit.EINFACH, 0, 0);
-		System.out.println(m.toString());
+		System.out.println(m);
 	}
 }
