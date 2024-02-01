@@ -38,9 +38,20 @@ public class MinesweeperGUI extends JFrame {
 
 		//JLabel das Anzeigt wie viele Bomben noch sind
 		verbleibendeBomben = schwierigkeit.getAnzahlBomben();
-		lbl_verbleibendeBomben = new JLabel(Integer.toString(verbleibendeBomben));
+		lbl_verbleibendeBomben = new JLabel("Verbleibende Bomben: " + verbleibendeBomben);
 		lbl_verbleibendeBomben.setBounds(800, 50, 200, 30);
 		cp.add(lbl_verbleibendeBomben);
+
+		JButton btn_AllesAufdecken = new JButton("Alle Aufdecken");
+		btn_AllesAufdecken.setBounds(10, 50, 200, 30);
+		btn_AllesAufdecken.addActionListener(e -> {
+			 int option = JOptionPane.showOptionDialog(MinesweeperGUI.this,
+					 "Wenn Sie alles aufdecken, dann gilt das Spiel als Verloren. Fortfahren?",
+					 "Alles Aufdecken", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+			 if (option == JOptionPane.YES_OPTION)
+				 allesAufdecken();
+		});
+		cp.add(btn_AllesAufdecken);
 
 		// JPanel voll mit Minen!
 		JPanel minenPanel = new JPanel(new GridLayout(HOEHE, BREITE));
@@ -55,74 +66,23 @@ public class MinesweeperGUI extends JFrame {
 				final int J = j;
 				felder[i][j] = new JButton();
 
-				felder[i][j].addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						// Wenn eine Flagge gesetzt ist, soll der Klick ignoriert werden
-						if (felder[I][J].getIcon() != null)
-							return;
+				felder[i][j].addActionListener(e -> {
+                    // Wenn eine Flagge gesetzt ist, soll der Klick ignoriert werden
+                    if (felder[I][J].getIcon() != null)
+                        return;
 
-						//Generiere es erst beim ersten Klick
-						if (firstClick) {
-							minenfeld = new MinenFeld(schwierigkeit, I, J);
-							System.out.println(minenfeld);
-							firstClick = false;
-						}
+                    //Generiere es erst beim ersten Klick
+                    if (firstClick) {
+                        minenfeld = new MinenFeld(schwierigkeit, I, J);
+                        System.out.println(minenfeld);
+                        firstClick = false;
+                    }
 
-						if (minenfeld.getZahl(J, I) == 0)
-							aufdeckenRekusiv(J, I);
-						else
-							aufdeckenGUI(J, I);
-					}
-
-					private void aufdeckenRekusiv(int x, int y) {
-						for (int i = y-1; i <= y+1; i++) {
-							for (int j = x-1; j <= x+1; j++) {
-								try {
-									if (felder[i][j].getIcon() != null)
-										continue;
-								} catch (ArrayIndexOutOfBoundsException ignore) {}
-
-								int minenfeldZahl = minenfeld.getZahl(j, i);
-								if (minenfeldZahl != -2)
-									aufdeckenGUI(j, i);
-								if (minenfeldZahl == 0)
-									aufdeckenRekusiv(j, i);
-							}
-						}
-					}
-
-					private void aufdeckenGUI(int x, int y) {
-						if (x >= HOEHE || y >= BREITE || x < 0 || y < 0)
-							return;
-
-						int zahl = minenfeld.aufdecken(x, y);
-						switch (zahl) {
-							case -1 -> MinesweeperGUI.this.felder[y][x].setIcon(new ImageIcon("Smiley.svg.png"));
-							case 0 ->  MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
-							case 1 -> {
-								MinesweeperGUI.this.felder[y][x].setForeground(Color.BLUE);
-								MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
-							}
-							case 2 -> {
-								MinesweeperGUI.this.felder[y][x].setForeground(Color.CYAN);
-								MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
-							}
-							case 3 -> {
-								MinesweeperGUI.this.felder[y][x].setForeground(Color.GREEN);
-								MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
-							}
-							case 4 -> {
-								MinesweeperGUI.this.felder[y][x].setForeground(Color.ORANGE);
-								MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
-							}
-							case 5 -> {
-								MinesweeperGUI.this.felder[y][x].setForeground(Color.RED);
-								MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
-							}
-						}
-					}
-				});
+                    if (minenfeld.getZahl(J, I) == 0)
+                        aufdeckenRekusiv(J, I);
+                    else
+                        aufdeckenGUI(J, I);
+                });
 
 				felder[i][j].addMouseListener(new MouseAdapter (){
 					public void mousePressed(MouseEvent me) {
@@ -147,8 +107,68 @@ public class MinesweeperGUI extends JFrame {
 		setVisible(true);
 	}
 
+	/** Deck alle Felder auf */
+	private void allesAufdecken() {
+		for (int i = 0; i < HOEHE; i++) {
+			for (int j = 0; j < BREITE; j++) {
+				aufdeckenGUI(j, i);
+			}
+		}
+	}
+
+	/** Deckt in der GUI ein Feld auf. Falls dieses Feld 0 ist werden automatisch auch die Nachbaren aufgedeckt. */
+	private void aufdeckenGUI(int x, int y) {
+		if (x >= HOEHE || y >= BREITE || x < 0 || y < 0)
+			return;
+
+		int zahl = minenfeld.aufdecken(x, y);
+		switch (zahl) {
+			case -1 -> MinesweeperGUI.this.felder[y][x].setIcon(new ImageIcon("Smiley.svg.png"));
+			case 0 ->  MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
+			case 1 -> {
+				MinesweeperGUI.this.felder[y][x].setForeground(Color.BLUE);
+				MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
+			}
+			case 2 -> {
+				MinesweeperGUI.this.felder[y][x].setForeground(Color.CYAN);
+				MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
+			}
+			case 3 -> {
+				MinesweeperGUI.this.felder[y][x].setForeground(Color.GREEN);
+				MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
+			}
+			case 4 -> {
+				MinesweeperGUI.this.felder[y][x].setForeground(Color.ORANGE);
+				MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
+			}
+			case 5 -> {
+				MinesweeperGUI.this.felder[y][x].setForeground(Color.RED);
+				MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
+			}
+		}
+	}
+
+	/** Checkt die Nachbarn des Feldes und deckt sie auf. Falls dieses Feld eine 0 ist, werden wiederum seine Nachbarn
+	 *  aufgedeckt.
+	 */
+	private void aufdeckenRekusiv(int x, int y) {
+		for (int i = y-1; i <= y+1; i++) {
+			for (int j = x-1; j <= x+1; j++) {
+				try {
+					if (felder[i][j].getIcon() != null)
+						continue;
+				} catch (ArrayIndexOutOfBoundsException ignore) {}
+
+				int minenfeldZahl = minenfeld.getZahl(j, i);
+				if (minenfeldZahl != -2)
+					aufdeckenGUI(j, i);
+				if (minenfeldZahl == 0)
+					aufdeckenRekusiv(j, i);
+			}
+		}
+	}
+
 	public static void main(String[] args) {
 		new MinesweeperGUI("Hallo Welt", Schwierigkeit.EINFACH);
 	}
-
 }
