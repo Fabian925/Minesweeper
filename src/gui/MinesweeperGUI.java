@@ -43,6 +43,7 @@ public class MinesweeperGUI extends JFrame {
 		cp.add(lbl_verbleibendeBomben);
 
 		JButton btn_AllesAufdecken = new JButton("Alle Aufdecken");
+		btn_AllesAufdecken.setEnabled(false);
 		btn_AllesAufdecken.setBounds(10, 50, 200, 30);
 		btn_AllesAufdecken.addActionListener(e -> {
 			 int option = JOptionPane.showOptionDialog(MinesweeperGUI.this,
@@ -76,6 +77,7 @@ public class MinesweeperGUI extends JFrame {
                         minenfeld = new MinenFeld(schwierigkeit, I, J);
                         System.out.println(minenfeld);
                         firstClick = false;
+						btn_AllesAufdecken.setEnabled(true);
                     }
 
                     if (minenfeld.getZahl(J, I) == 0)
@@ -111,6 +113,8 @@ public class MinesweeperGUI extends JFrame {
 	private void allesAufdecken() {
 		for (int i = 0; i < HOEHE; i++) {
 			for (int j = 0; j < BREITE; j++) {
+				if (felder[i][j].getIcon() != null)
+					felder[i][j].setIcon(null);
 				aufdeckenGUI(j, i);
 			}
 		}
