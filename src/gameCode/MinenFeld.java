@@ -68,7 +68,7 @@ public class MinenFeld {
 			for (int j = 0; j < BREITE; j++) {
 				if (i <= yStart + 1 && i >= yStart - 1 && j <= xStart + 1 && j >= xStart - 1)
 					feld[i][j] = 0;
-				else {
+				else if (feld[i][j] != -1){
 					feld[i][j] = Math.random() < MINEN_CHANCHE ? -1 : 0;
 					if(feld[i][j] == -1)
 						verbleibendeBomben--;

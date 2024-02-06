@@ -89,7 +89,7 @@ public class MinesweeperGUI extends JFrame {
 				felder[i][j].addMouseListener(new MouseAdapter (){
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON3 && felder[I][J].getText().isEmpty()) {
-							//FIXME Bug: Text wird angezeigt nachdem man flagge darauf gesetzt hat, Lösung no koan Bock bleib amol aso
+							//FIXME Smile.svg kann entfehrnt werden mit Rechtsklick. Nicht so schlimm des past schun.
 							if (felder[I][J].getIcon() == null && verbleibendeBomben > 0) {
 								felder[I][J].setIcon(new ImageIcon("Flagge.png"));
 								verbleibendeBomben--;
