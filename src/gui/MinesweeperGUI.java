@@ -127,7 +127,7 @@ public class MinesweeperGUI extends JFrame {
 
 		int zahl = minenfeld.aufdecken(x, y);
 		switch (zahl) {
-			case -1 -> MinesweeperGUI.this.felder[y][x].setIcon(new ImageIcon("Smiley.svg.png"));
+			case -1 -> MinesweeperGUI.this.felder[y][x].setIcon(new ImageIcon("Smiley.png"));
 			case 0 ->  MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
 			case 1 -> {
 				MinesweeperGUI.this.felder[y][x].setForeground(Color.BLUE);
