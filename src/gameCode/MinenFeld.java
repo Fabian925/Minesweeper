@@ -1,5 +1,7 @@
 package gameCode;
 
+import java.util.Arrays;
+
 public class MinenFeld {
 	/*Spielfeld wo Minen oder Zahlen sein können Inhalte:
 	 * -1 = Mine
@@ -114,6 +116,18 @@ public class MinenFeld {
 		} catch (ArrayIndexOutOfBoundsException ignore) {
 			return false;
 		}
+	}
+
+	/**
+	 * Liefert, ob das Spiel gewonnen wurde.
+	 * @return Wenn nur mehr noch Minen (-1) und aufgedeckte Felder (-2) vorhanden sind, gilt das Spiel als gewonnen.
+	 */
+	public boolean gewonnen() {
+		for (int[] array : feld) {
+			if (Arrays.stream(array).anyMatch(feld -> feld >= 0))
+				return false;
+		}
+		return true;
 	}
 
 	@Override

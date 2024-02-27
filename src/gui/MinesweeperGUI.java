@@ -56,7 +56,7 @@ public class MinesweeperGUI extends JFrame {
 
 		// JPanel voll mit Minen!
 		JPanel minenPanel = new JPanel(new GridLayout(HOEHE, BREITE));
-		minenPanel.setBounds(10, 100, cp.getWidth() - 20, cp.getHeight() -110);
+		minenPanel.setBounds(10, 100, cp.getWidth() - 20, cp.getHeight() - 110);
 		cp.add(minenPanel);
 
 		//MinenFeld mit JButtons um über der GUI mit dem MinenFeld in der MinenFeld.java interagieren zu können
@@ -84,6 +84,7 @@ public class MinesweeperGUI extends JFrame {
                         aufdeckenRekusiv(J, I);
                     else
                         aufdeckenGUI(J, I);
+					checkGewonnen();
                 });
 
 				felder[i][j].addMouseListener(new MouseAdapter (){
@@ -118,17 +119,21 @@ public class MinesweeperGUI extends JFrame {
 				aufdeckenGUI(j, i);
 			}
 		}
+		verloren();
 	}
 
-	/** Deckt in der GUI ein Feld auf. Falls dieses Feld 0 ist werden automatisch auch die Nachbaren aufgedeckt. */
+	/** Deckt in der GUI ein Feld auf. Falls dieses Feld 0 ist, werden automatisch auch die Nachbarn aufgedeckt. */
 	private void aufdeckenGUI(int x, int y) {
 		if (x >= HOEHE || y >= BREITE || x < 0 || y < 0)
 			return;
 
 		int zahl = minenfeld.aufdecken(x, y);
 		switch (zahl) {
-			case -1 -> MinesweeperGUI.this.felder[y][x].setIcon(new ImageIcon("Smiley.png"));
-			case 0 ->  MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
+            case -1 -> {
+                MinesweeperGUI.this.felder[y][x].setIcon(new ImageIcon("Smiley.png"));
+                verloren();
+            }
+            case 0 ->  MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
 			case 1 -> {
 				MinesweeperGUI.this.felder[y][x].setForeground(Color.BLUE);
 				MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
@@ -170,6 +175,18 @@ public class MinesweeperGUI extends JFrame {
 					aufdeckenRekusiv(j, i);
 			}
 		}
+	}
+
+	private void checkGewonnen() {
+		if (minenfeld.gewonnen()) {
+			System.out.println("Juhu");//TODO
+			this.dispose();
+		}
+	}
+
+	private void verloren() {
+		System.out.println("verloren"); //TODO
+		this.dispose();
 	}
 
 	public static void main(String[] args) {
