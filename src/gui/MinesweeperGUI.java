@@ -180,13 +180,15 @@ public class MinesweeperGUI extends JFrame {
 	private void checkGewonnen() {
 		if (minenfeld.gewonnen()) {
 			System.out.println("Juhu");//TODO
-			this.dispose();
+			new ErgebnisDialog(this, "Gewonnen", true);
+			//this.dispose();
 		}
 	}
 
 	private void verloren() {
 		System.out.println("verloren"); //TODO
-		this.dispose();
+		new ErgebnisDialog(this, "Verloren", false);
+		//this.dispose();
 	}
 
 	public static void main(String[] args) {
