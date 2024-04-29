@@ -13,6 +13,7 @@ public class KartenContainerGUI extends JPanel {
     private JLabel kartenLayout;
     private JButton hitButton;
     private JButton stayButton;
+    private JLabel anzahl;
 
     public KartenContainerGUI(BlackJackPlayer player) {
         setLayout(null);
@@ -33,6 +34,11 @@ public class KartenContainerGUI extends JPanel {
         stayButton.setBounds(430, 65, 100, 25);
         stayButton.setEnabled(false);
         add(stayButton);
+
+        anzahl = new JLabel("0");
+        anzahl.setBounds(430, 35, 100, 25);
+        hitButton.addActionListener(e -> anzahl.setText(Integer.toString(this.player.getKartenValue())));
+        add(anzahl);
     }
 
     public void addKarte(Karte karte) {
@@ -40,6 +46,7 @@ public class KartenContainerGUI extends JPanel {
         newKartenGUI.setVisible(true);
         player.hit(karte);
         kartenLayout.add(newKartenGUI);
+        anzahl.setText(Integer.toString(this.player.getKartenValue()));
         kartenLayout.revalidate();
         kartenLayout.repaint();
     }
@@ -49,6 +56,7 @@ public class KartenContainerGUI extends JPanel {
         newKartenGUI.setVisible(true);
         player.hit(karte);
         kartenLayout.add(newKartenGUI);
+        anzahl.setText(Integer.toString(this.player.getKartenValue()));
         kartenLayout.revalidate();
         kartenLayout.repaint();
     }
