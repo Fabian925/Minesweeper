@@ -1,6 +1,5 @@
 package blackJack.gui;
 
-import blackJack.klassen.BlackJackPlayer;
 import blackJack.klassen.Karte;
 
 import javax.swing.*;
@@ -9,21 +8,18 @@ import java.awt.event.ActionListener;
 
 public class KartenContainerGUI extends JPanel {
 
-    BlackJackPlayer player;
     private JLabel kartenLayout;
     private JButton hitButton;
     private JButton stayButton;
     private JLabel anzahl;
 
-    public KartenContainerGUI(BlackJackPlayer player) {
+    public KartenContainerGUI() {
         setLayout(null);
         kartenLayout = new JLabel();
         kartenLayout.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
         kartenLayout.setBounds(0, 0, 420, 120);
         kartenLayout.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
         add(kartenLayout);
-
-        this.player = player;
 
         hitButton = new JButton("Hit");
         hitButton.setBounds(430, 95, 100, 25);
@@ -37,16 +33,13 @@ public class KartenContainerGUI extends JPanel {
 
         anzahl = new JLabel("0");
         anzahl.setBounds(430, 35, 100, 25);
-        hitButton.addActionListener(e -> anzahl.setText(Integer.toString(this.player.getKartenValue())));
         add(anzahl);
     }
 
     public void addKarte(Karte karte) {
         var newKartenGUI = new KarteGUI(karte);
         newKartenGUI.setVisible(true);
-        player.hit(karte);
         kartenLayout.add(newKartenGUI);
-        anzahl.setText(Integer.toString(this.player.getKartenValue()));
         kartenLayout.revalidate();
         kartenLayout.repaint();
     }
@@ -54,9 +47,7 @@ public class KartenContainerGUI extends JPanel {
     public void addKarte(Karte karte, boolean aufgedeckt) {
         var newKartenGUI = new KarteGUI(karte, aufgedeckt);
         newKartenGUI.setVisible(true);
-        player.hit(karte);
         kartenLayout.add(newKartenGUI);
-        anzahl.setText(Integer.toString(this.player.getKartenValue()));
         kartenLayout.revalidate();
         kartenLayout.repaint();
     }
@@ -71,5 +62,9 @@ public class KartenContainerGUI extends JPanel {
     public void setEnableButtons(boolean enable) {
         hitButton.setEnabled(enable);
         stayButton.setEnabled(enable);
+    }
+
+    public void setAnzahl(int anzahl) {
+        this.anzahl.setText(Integer.toString(anzahl));
     }
 }

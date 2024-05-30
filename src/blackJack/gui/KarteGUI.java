@@ -9,7 +9,7 @@ class KarteGUI extends JPanel {
     private boolean verdeckt = false;
     private Karte karte;
 
-    public KarteGUI() {
+    private KarteGUI() {
         super();
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setLayout(null);
@@ -33,10 +33,11 @@ class KarteGUI extends JPanel {
     public KarteGUI(Karte karte, boolean verdeckt) {
         this(karte);
         this.verdeckt = verdeckt;
-    }
-
-
-    public void addKarte(Karte karte) {
-
+        if (this.verdeckt) {
+            var hide = new JLabel("Top Secret");
+            hide.setFont(new Font(null, Font.PLAIN, 10));
+            hide.setBounds(10, 60, 50, 20);
+            add(hide);
+        }
     }
 }
