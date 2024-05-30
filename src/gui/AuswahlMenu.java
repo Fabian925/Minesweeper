@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.*;
 
@@ -11,13 +12,15 @@ public class AuswahlMenu extends JFrame{
 
     private final JComboBox<Schwierigkeit> schwierigkeit = new JComboBox<>();
 	private Schwierigkeit auswahl = null;
-	
+	private final AtomicBoolean closed = new AtomicBoolean(false);
+
 	public AuswahlMenu(String title) {
 		setTitle(title);
 		setBounds(10, 10, 352, 300);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
 		setLayout(null);
+		setLocationRelativeTo(null);
 		Container cp = getContentPane();
 
         JLabel titelVomSpiel = new JLabel("<html>Minesweeper" + "<br/>" + "Von Roalter Fabian</html>", SwingConstants.CENTER);
@@ -42,25 +45,46 @@ public class AuswahlMenu extends JFrame{
 		schliessenButton.setBounds(55, 225, 125, 30);
 		schliessenButton.addActionListener(e -> AuswahlMenu.this.dispose());
 		cp.add(schliessenButton);
-		setVisible(true);
-	}
-
-	/** Liefert den Schwierigkeitsgrad. Wenn keiner ausgewählt wurde, dann wird null geliefert */
-	public Schwierigkeit wahl() {
-		return this.auswahl;
-	}
-	public static void main(String[] args) {
-		var auswahl = new AuswahlMenu("Minesweeper");
-		auswahl.addWindowListener(new WindowAdapter() {
+		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
-				Schwierigkeit s = auswahl.wahl();
-				if (s != null)
-					new MinesweeperGUI("Minesweeper: " + s, s);
-				else
-					auswahl.dispose();
+				synchronized (closed) {
+					closed.set(true);
+					closed.notify();
+				}
 			}
 		});
+	}
+
+	/**
+	 * Liefert die Auswahl. Blockiert, solange das Fenster noch nicht geschlossen wurde.
+	 * @return die getroffene Auswahl. Bei keinem ausgewählten Schwierigkeitsgrad wird null geliefert.
+	 */
+	public Schwierigkeit getAuswahl() {
+		synchronized (closed) {
+			while(!closed.get()) {
+				try {
+					closed.wait();
+				} catch (InterruptedException ignore) { }
+			}
+		}
+		return this.auswahl;
+	}
+
+	public static void main(String[] args) {
+		boolean again = false;
+		do {
+			var auswahl = new AuswahlMenu("Minesweeper");
+			auswahl.setLocationRelativeTo(null);
+			auswahl.setVisible(true);
+			Schwierigkeit s = auswahl.getAuswahl();
+			if (s != null) {
+				var mine = new MinesweeperGUI("Minesweeper: " + s, s); // TODO Minesweeper wird nicht auto. im Vordergrund angezeigt.
+				mine.setLocationRelativeTo(null);
+				mine.setVisible(true);
+				again = mine.getAgain();
+			}
+		} while (again);
 	}
 }
 

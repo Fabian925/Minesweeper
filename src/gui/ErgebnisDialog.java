@@ -5,14 +5,16 @@ import java.awt.*;
 
 public class ErgebnisDialog extends JDialog {
 
-    private final int WIDTH = 300;
-    private final int HEIGHT = 180;
+    private Option selectedOption = Option.LEAVE;
 
     public ErgebnisDialog(Frame owner, String title, boolean gewonnen) {
-        super(owner, title);
-        setBounds(10, 10, WIDTH, HEIGHT);
+        super(owner, title, true);
+        final int WIDTH = 300;
+        final int HEIGHT = 180;
+        setSize(WIDTH, HEIGHT);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
+        setLocationRelativeTo(owner);
         setLayout(null);
         Container cp = getContentPane();
 
@@ -30,14 +32,20 @@ public class ErgebnisDialog extends JDialog {
         JPanel actions = getActionsJPanel();
         actions.setBounds(0, 105, WIDTH, 30);
         cp.add(actions);
-
-        setVisible(true);
     }
 
-    private static JPanel getActionsJPanel() {
+    private JPanel getActionsJPanel() {
         JPanel actions = new JPanel();
         JButton nochmalButton = new JButton("Nochmal");
+        nochmalButton.addActionListener(e -> {
+            selectedOption = Option.AGAIN;
+            dispose();
+        });
         JButton endeButton = new JButton("Ende");
+        endeButton.addActionListener(e -> {
+            selectedOption = Option.LEAVE;
+            dispose();
+        });
         var layout = new GroupLayout(actions);
         layout.setHorizontalGroup(
             layout.createSequentialGroup()
@@ -64,6 +72,11 @@ public class ErgebnisDialog extends JDialog {
         infos.add(bestZeit);
         infos.add(bestZeitValue);
         return infos;
+    }
+
+    /** Liefert die ausgewählte Option. Wenn noch keine ausgewählt wurde, liefert die Methode null. */
+    public Option getSelectedOption() {
+        return selectedOption;
     }
 
     public static void main(String[] args) {

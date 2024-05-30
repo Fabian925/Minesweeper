@@ -2,23 +2,23 @@ package gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.*;
 import gameCode.*;
 
 public class MinesweeperGUI extends JFrame {
-
-	private JButton[][] felder;
+	private final JButton[][] felder;
 	private final int BREITE;
 	private final int HOEHE;
 	private MinenFeld minenfeld = null;
-
-	private JLabel lbl_verbleibendeBomben;
-	private JLabel lbl_titel;
 	private boolean firstClick = true;
 	private int verbleibendeBomben;
+	private boolean again = false;
+	private final AtomicBoolean closed = new AtomicBoolean(false);
 
 	public MinesweeperGUI(String title, Schwierigkeit schwierigkeit) {
+		super();
 		setTitle(title);
 		setPreferredSize(new Dimension(1000, 1000));
 		setResizable(false);
@@ -31,14 +31,14 @@ public class MinesweeperGUI extends JFrame {
 		HOEHE = schwierigkeit.getDimension();
 
 		//JLabel nur für titel
-		lbl_titel = new JLabel(title, SwingConstants.CENTER);
+		JLabel lbl_titel = new JLabel(title, SwingConstants.CENTER);
 		lbl_titel.setFont(new Font("SansSerif", Font.BOLD, 20));
 		lbl_titel.setBounds(0, 10, 1000, 80);
 		cp.add(lbl_titel);
 
 		//JLabel das Anzeigt wie viele Bomben noch sind
 		verbleibendeBomben = schwierigkeit.getAnzahlBomben();
-		lbl_verbleibendeBomben = new JLabel("Verbleibende Bomben: " + verbleibendeBomben);
+		JLabel lbl_verbleibendeBomben = new JLabel("Verbleibende Bomben: " + verbleibendeBomben);
 		lbl_verbleibendeBomben.setBounds(800, 50, 200, 30);
 		cp.add(lbl_verbleibendeBomben);
 
@@ -107,11 +107,19 @@ public class MinesweeperGUI extends JFrame {
 				minenPanel.add(felder[i][j]);
 			}
 		}
-		setVisible(true);
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				synchronized (closed) {
+					closed.set(true);
+					closed.notify();
+				}
+			}
+		});
 	}
 
 	/** Deck alle Felder auf */
-	private void allesAufdecken() {
+	private void allesAufdecken() { //FIXME verloren wird bei der ersten Bombe getriggert, sollte erst zum schluss der Methode getriggert werden.
 		for (int i = 0; i < HOEHE; i++) {
 			for (int j = 0; j < BREITE; j++) {
 				if (felder[i][j].getIcon() != null)
@@ -119,7 +127,7 @@ public class MinesweeperGUI extends JFrame {
 				aufdeckenGUI(j, i);
 			}
 		}
-		verloren();
+		showEndDialog(false);
 	}
 
 	/** Deckt in der GUI ein Feld auf. Falls dieses Feld 0 ist, werden automatisch auch die Nachbarn aufgedeckt. */
@@ -131,7 +139,7 @@ public class MinesweeperGUI extends JFrame {
 		switch (zahl) {
             case -1 -> {
                 MinesweeperGUI.this.felder[y][x].setIcon(new ImageIcon("Smiley.png"));
-                verloren();
+				showEndDialog(false);
             }
             case 0 ->  MinesweeperGUI.this.felder[y][x].setText(Integer.toString(zahl));
 			case 1 -> {
@@ -177,18 +185,30 @@ public class MinesweeperGUI extends JFrame {
 		}
 	}
 
+	/** Schaut nach, ob gewonnen wurde und zeigt, wenn wahr, den Gewonnen-Dialog an. */
 	private void checkGewonnen() {
-		if (minenfeld.gewonnen()) {
-			System.out.println("Juhu");//TODO
-			new ErgebnisDialog(this, "Gewonnen", true);
-			//this.dispose();
-		}
+		if (minenfeld.gewonnen())
+			showEndDialog(true);
 	}
 
-	private void verloren() {
-		System.out.println("verloren"); //TODO
-		new ErgebnisDialog(this, "Verloren", false);
-		//this.dispose();
+	private void showEndDialog(boolean gewonnen) {
+		var ergebnis = new ErgebnisDialog(this, gewonnen ? "Gewonnen" : "Verloren", gewonnen);
+		ergebnis.setModal(true);
+		ergebnis.setVisible(true); // Warte bis Dialog geschlossen wird
+		if (ergebnis.getSelectedOption() == Option.AGAIN)
+			again = true;
+		dispose();
+	}
+
+	public boolean getAgain() {
+		synchronized (closed) {
+			while (!closed.get()) {
+				try {
+					closed.wait();
+				} catch (InterruptedException ignore) { }
+			}
+		}
+		return this.again;
 	}
 
 	public static void main(String[] args) {
