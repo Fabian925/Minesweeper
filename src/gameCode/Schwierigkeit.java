@@ -7,11 +7,10 @@ public enum Schwierigkeit {
 
 	@Override
 	public String toString() {
-        return switch (this.ordinal()) {
-            case 0 -> "Einfach";
-            case 1 -> "Mittel";
-            case 2 -> "Schwierig";
-            default -> null;
+        return switch (this) {
+			case EINFACH -> "Einfach";
+			case MITTEL -> "Mittel";
+			case SCHWIERIG -> "Schwierig";
         };
 	}
 	
