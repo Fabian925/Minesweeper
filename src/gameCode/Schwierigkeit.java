@@ -16,20 +16,18 @@ public enum Schwierigkeit {
 	}
 	
 	public int getAnzahlBomben() {
-        return switch (this.ordinal()) {
-            case 0 -> 12;
-            case 1 -> 28;
-            case 2 -> 40;
-            default -> 0;
+        return switch (this) {
+			case EINFACH -> 12;
+			case MITTEL -> 28;
+			case SCHWIERIG -> 40;
         };
 	}
 
     public int getDimension() {
-        return switch (this.ordinal()) {
-            case 0 -> 10;
-            case 1 -> 15;
-            case 2 -> 20;
-            default -> 0;
+        return switch (this) {
+			case EINFACH -> 10;
+			case MITTEL -> 15;
+			case SCHWIERIG -> 20;
         };
     }
 }
