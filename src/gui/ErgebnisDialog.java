@@ -2,13 +2,16 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalTime;
 
 public class ErgebnisDialog extends JDialog {
 
     private Option selectedOption = Option.LEAVE;
+    private LocalTime needetTime;
 
-    public ErgebnisDialog(Frame owner, String title, boolean gewonnen) {
+    public ErgebnisDialog(Frame owner, String title, boolean gewonnen, LocalTime needetTime) {
         super(owner, title, true);
+        this.needetTime = needetTime;
         final int WIDTH = 300;
         final int HEIGHT = 180;
         setSize(WIDTH, HEIGHT);
@@ -55,16 +58,16 @@ public class ErgebnisDialog extends JDialog {
         return actions;
     }
 
-    private static JPanel getInfoJPanel() {
+    private JPanel getInfoJPanel() {
         var layout = new GridLayout(2, 2);
         layout.setHgap(15);
         JPanel infos = new JPanel(layout);
 
-        JLabel zeit = new JLabel("Zeit:", SwingConstants.RIGHT);
-        JLabel zeitValue = new JLabel("00:00:00");
-        zeit.setLabelFor(zeitValue);
-        infos.add(zeit);
-        infos.add(zeitValue);
+        JLabel timeLabel = new JLabel("Zeit:", SwingConstants.RIGHT);
+        JLabel timeValue = new JLabel(this.needetTime != null ? this.needetTime.toString() : "--:--:--");
+        timeLabel.setLabelFor(timeValue);
+        infos.add(timeLabel);
+        infos.add(timeValue);
 
         JLabel bestZeit = new JLabel("Bestzeit:", SwingConstants.RIGHT);
         JLabel bestZeitValue = new JLabel("00:00:00");
@@ -80,6 +83,6 @@ public class ErgebnisDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        new ErgebnisDialog(new JFrame(), "Florian isch a cooler Nome", false);
+        new ErgebnisDialog(new JFrame(), "Florian isch a cooler Nome", false, LocalTime.now());
     }
 }

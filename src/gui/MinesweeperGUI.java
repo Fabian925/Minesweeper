@@ -3,7 +3,6 @@ package gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.swing.*;
 import gameCode.*;
 
@@ -187,12 +186,12 @@ public class MinesweeperGUI extends JFrame {
 
 	/** Schaut nach, ob gewonnen wurde und zeigt, wenn wahr, den Gewonnen-Dialog an. */
 	private void checkGewonnen() {
-		if (minenfeld.gewonnen())
+		if (minenfeld.isGewonnen())
 			showEndDialog(true);
 	}
 
 	private void showEndDialog(boolean gewonnen) {
-		var ergebnis = new ErgebnisDialog(this, gewonnen ? "Gewonnen" : "Verloren", gewonnen);
+		var ergebnis = new ErgebnisDialog(this, gewonnen ? "Gewonnen" : "Verloren", gewonnen, minenfeld.getTime());
 		ergebnis.setModal(true);
 		ergebnis.setVisible(true); // Warte bis Dialog geschlossen wird
 		if (ergebnis.getSelectedOption() == Option.AGAIN)

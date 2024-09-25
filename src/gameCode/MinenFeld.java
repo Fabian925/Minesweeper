@@ -1,5 +1,6 @@
 package gameCode;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 
 public class MinenFeld {
@@ -7,7 +8,6 @@ public class MinenFeld {
 	 * -1 = Mine
 	 * 0 = Keine Mine in der nähe
 	 * 1 = 1 Mine in der Nähe
-	 * .
 	 * .
 	 * 5 Minen in der Nähe
 	 * 5 ist das Maximum
@@ -17,6 +17,8 @@ public class MinenFeld {
 	private final int BREITE;
 	private final int HOEHE;
 	private final int ANZAHL_BOMBEN;
+	private LocalTime startTime;
+	private LocalTime stopTime;
 	/**
 	 * legt ein neues Feld an und füllt es mit Minen
 	 * @param xStart die x Koordinate, welche sicher eine 0 sein muss
@@ -30,6 +32,7 @@ public class MinenFeld {
 		ANZAHL_BOMBEN = schwierigkeit.getAnzahlBomben();
 		fuellenMitMinen(yStart, xStart);
 		fuellenMitZahlen();
+		startTime = LocalTime.now();
 	}
 	
 	public void setZahl(int x, int y, int value) {
@@ -122,12 +125,23 @@ public class MinenFeld {
 	 * Liefert, ob das Spiel gewonnen wurde.
 	 * @return Wenn nur mehr noch Minen (-1) und aufgedeckte Felder (-2) vorhanden sind, gilt das Spiel als gewonnen.
 	 */
-	public boolean gewonnen() {
+	public boolean isGewonnen() {
 		for (int[] array : feld) {
-			if (Arrays.stream(array).anyMatch(feld -> feld >= 0))
+			if (Arrays.stream(array).anyMatch(feld -> feld >= 0)) {
 				return false;
+			}
 		}
+		stopTime = LocalTime.now();
 		return true;
+	}
+
+	public LocalTime getTime() {
+		if (stopTime == null)
+			return null;
+		return stopTime.minusHours(startTime.getHour())
+				.minusMinutes(startTime.getMinute())
+				.minusSeconds(startTime.getSecond())
+				.withNano(0);
 	}
 
 	@Override
