@@ -1,5 +1,6 @@
 package gameCode;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 
@@ -132,6 +133,7 @@ public class MinenFeld {
 			}
 		}
 		stopTime = LocalTime.now();
+		HighScoreStore.checkNewHighScore(new HighScore(null, getTime(), LocalDate.now()));
 		return true;
 	}
 

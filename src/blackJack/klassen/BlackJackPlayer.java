@@ -14,7 +14,7 @@ import java.util.List;
  *
  * Player:
  * - var hand
- * - var mondy
+ * - var moeny
  * - hit()
  * - stay()
  * - double()

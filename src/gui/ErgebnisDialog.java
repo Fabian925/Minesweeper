@@ -1,5 +1,8 @@
 package gui;
 
+import gameCode.HighScore;
+import gameCode.HighScoreStore;
+
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalTime;
@@ -64,13 +67,16 @@ public class ErgebnisDialog extends JDialog {
         JPanel infos = new JPanel(layout);
 
         JLabel timeLabel = new JLabel("Zeit:", SwingConstants.RIGHT);
-        JLabel timeValue = new JLabel(this.needetTime != null ? this.needetTime.toString() : "--:--:--");
+        JLabel timeValue = new JLabel(needetTime != null ? needetTime.toString() : "--:--:--");
         timeLabel.setLabelFor(timeValue);
         infos.add(timeLabel);
         infos.add(timeValue);
 
+        HighScore highScore = HighScoreStore.getBestHighScore();
+        String time = highScore != null ? highScore.time().toString() : "--:--:--";
+
         JLabel bestZeit = new JLabel("Bestzeit:", SwingConstants.RIGHT);
-        JLabel bestZeitValue = new JLabel("00:00:00");
+        JLabel bestZeitValue = new JLabel(time);
         bestZeit.setLabelFor(bestZeitValue);
         infos.add(bestZeit);
         infos.add(bestZeitValue);
